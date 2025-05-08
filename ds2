@@ -1,0 +1,83 @@
+DS2
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from sklearn.preprocessing import PowerTransformer
+
+# 1. Create synthetic dataset
+np.random.seed(42)
+n = 100
+df = pd.DataFrame({
+    'student_id': np.arange(1, n+1),
+    'age': np.random.randint(15, 19, size=n),
+    'gender': np.random.choice(['Male', 'Female'], size=n),
+    'math_score': np.random.normal(70, 15, size=n),
+    'english_score': np.random.normal(65, 10, size=n),
+    'science_score': np.random.normal(75, 12, size=n),
+    'attendance_rate': np.random.beta(5, 1, size=n) * 100
+})
+
+# Introduce ~5% missing values
+for col in ['math_score', 'english_score', 'attendance_rate']:
+    df.loc[df.sample(frac=0.05).index, col] = np.nan
+
+# Introduce ~3% outliers
+df.loc[df.sample(frac=0.03).index, 'science_score'] *= 1.8
+df.loc[df.sample(frac=0.03).index, 'attendance_rate'] += 50
+
+print("INITIAL DATA (first 5 rows):")
+print(df.head(), "\n")
+
+# 2. Scan & impute missing values
+print("MISSING VALUES BEFORE:")
+print(df.isnull().sum(), "\n")
+
+# Impute numeric with mean
+means = df[['math_score', 'english_score', 'attendance_rate']].mean()
+df['math_score']      = df['math_score'].fillna(means['math_score'])
+df['english_score']   = df['english_score'].fillna(means['english_score'])
+df['attendance_rate'] = df['attendance_rate'].fillna(means['attendance_rate'])
+
+print("MISSING VALUES AFTER:")
+print(df.isnull().sum(), "\n")
+#plt.figure(figsize=(10, 4))
+
+sns.boxplot(data=df[['math_score', 'english_score', 'science_score', 'attendance_rate']])
+plt.title("Boxplot Before Outlier Treatment")
+plt.show()
+
+# 3. Detect & treat outliers using IQR clipping
+num_cols = ['math_score', 'english_score', 'science_score', 'attendance_rate']
+for col in num_cols:
+    Q1, Q3 = df[col].quantile([0.25, 0.75])
+    IQR = Q3 - Q1
+    lower, upper = Q1 - 1.5 * IQR, Q3 + 1.5 * IQR
+    df[col] = df[col].clip(lower, upper)
+
+print("OUTLIERS CLIPPED via IQR. Summary stats now:")
+print(df[num_cols].describe(), "\n")
+
+#plt.figure(figsize=(10, 4))
+sns.boxplot(data=df[['math_score', 'english_score', 'science_score', 'attendance_rate']])
+plt.title("Boxplot After Outlier Treatment")
+plt.show()
+# 4. Transform attendance_rate to reduce skewness using log1p
+print("Skewness BEFORE:", df['attendance_rate'].skew())
+
+# Apply log1p (log(1 + x)) to avoid issues with 0 values
+df['attendance_rate_transformed'] = np.log10(df['attendance_rate'])
+
+print("Skewness AFTER:", df['attendance_rate_transformed'].skew(), "\n")
+
+fig, axs = plt.subplots(1, 2, figsize=(10, 4))
+axs[0].hist(df['attendance_rate'], bins=15, color='skyblue', edgecolor='black')
+axs[0].set_title('Original Attendance Rate')
+axs[1].hist(df['attendance_rate_transformed'], bins=15, color='salmon', edgecolor='black')
+axs[1].set_title('Transformed Attendance Rate')
+plt.tight_layout()
+plt.show()
+
+print(df[['attendance_rate', 'attendance_rate_transformed']].head())
+
