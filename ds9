@@ -1,0 +1,28 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
+
+# Load Titanic dataset
+titanic = sns.load_dataset('titanic')
+
+# Plot 1: Age by Gender and Survival
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='sex', y='age', hue='survived', data=titanic, palette=['#1f77b4', '#ff7f0e'])  # Blue for "No", Orange for "Yes"
+plt.title('Age Distribution by Gender and Survival (Basic)')
+plt.xlabel('Gender')
+plt.ylabel('Age')
+
+# Custom legend to ensure distinct colors
+legend_elements = [
+    Patch(facecolor='#1f77b4', label='No'),  # Blue for "No"
+    Patch(facecolor='#ff7f0e', label='Yes')  # Orange for "Yes"
+]
+plt.legend(handles=legend_elements, title='Survived', loc='upper right')
+
+plt.show()
+
+‘’’ Observations and Inferences from the Box Plot The box plot visualizes the age distribution of Titanic passengers by gender ('male' and 'female') and survival status ('Survived': No = blue, Yes = orange). Here are two key observations and inferences:
+Survival Disparity by Gender: Females: The orange box (Survived = Yes) for females is significantly larger than the blue box (Survived = No), indicating a higher survival rate. The median age for surviving females is around 28, with an IQR from approximately 20 to 40, showing a broad age range of survivors. The blue box (Survived = No) has a slightly higher median (25) and a narrower IQR, suggesting younger males (e.g., boys) were more likely to survive. Age Distribution and Outliers: Males: The non-surviving male group shows a wider spread with several outliers above 60 (e.g., at 70 and 80), highlighting that older men were particularly vulnerable. The surviving male group has a tighter range (mostly below 40) with fewer outliers, indicating that younger males had a better chance of survival. Females: Both surviving and non-surviving females have fewer outliers compared to males, with surviving females showing a slightly more compact distribution (IQR from 20 to 40). The non-surviving female group has a small number of outliers (e.g., around 50), suggesting that age played a less significant role in female survival, as women across age groups were prioritized for lifeboats. Inference: The plot clearly illustrates the "women and children first" policy during the Titanic evacuation. Females had a much higher survival rate across age groups, while male survival was heavily skewed toward younger individuals, with older males facing the highest mortality. The presence of elderly male outliers in the non-survivor group underscores their lower priority in rescue efforts.
+[ ]:
+
+‘’’
