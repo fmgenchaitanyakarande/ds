@@ -1,0 +1,53 @@
+import pandas as pd
+import numpy as np
+‘’’Description
+The Iris dataset is a classic dataset in machine learning, consisting of 150 samples of iris flowers.
+It contains four features: sepal length, sepal width, petal length, and petal width, all measured in centimeters.
+These features are used to classify the flowers into three species: setosa, versicolor, and virginica.
+The dataset is widely used for testing classification algorithms.
+Source
+https://www.kaggle.com/datasets/uciml/iris
+‘’’
+df = pd.read_csv('IRIS.csv')
+df.columns	
+df['species'].unique()
+df['species'].value_counts()
+df.isnull().sum()
+
+df['sepal_length'] = df['sepal_length'].fillna(df['sepal_length'].mean())
+print(f"Mean of 'sepal_length': {df['sepal_length'].mean()}")
+
+df['sepal_width'] = df['sepal_width'].fillna(df['sepal_width'].mean())
+print(f"Mean of 'sepal_width': {df['sepal_width'].mean()}")
+
+df['petal_length'] = df['petal_length'].fillna(df['petal_length'].mean())
+print(f"Mean of 'petal_length': {df['petal_length'].mean()}")
+
+df['petal_width'] = df['petal_width'].fillna(df['petal_width'].mean())
+print(f"Mean of 'petal_width': {df['petal_width'].mean()}")
+
+df.isnull().sum()
+df.describe(include='all')
+df.dtypes
+df.shape
+
+# Summarize the variable types based on data types
+print("\nSummary of Variables:")
+for col in df.columns:
+    if df[col].dtype == 'object':
+        print(f"{col}: Character (String)")
+    elif df[col].dtype == 'int64':
+        print(f"{col}: Integer")
+    elif df[col].dtype == 'float64':
+        print(f"{col}: Numeric")
+    elif df[col].dtype == 'bool':
+        print(f"{col}: Logical (Boolean)")
+    else:
+        print(f"{col}: Unknown")
+
+df1 = pd.read_csv('IRIS.csv')
+
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df1['species'] = le.fit_transform(df1['species'])
+df1.sample(5)
