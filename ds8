@@ -1,0 +1,74 @@
+import pandas as pd
+import numpy as np
+import seaborn as sn
+import matplotlib.pyplot as plt
+
+# Load the Titanic dataset
+titanic = sn.load_dataset('titanic')
+
+# Check for missing values
+print(titanic.isnull().sum())
+
+# Drop NaN values in 'age' and 'embarked' columns
+titanic['age'].dropna()
+titanic['embarked'].dropna()
+titanic['embark_town'].dropna()
+
+
+# Visualizations
+sn.displot(x=titanic['age'], bins=10)
+sn.jointplot(x='age', y='fare', data=titanic, kind='scatter')
+sn.jointplot(x='age', y='fare', data=titanic, kind='hex')
+sn.rugplot(titanic['fare'])
+
+# Bar and count plots
+# Bar plot with hue and no legend (optional)
+sn.barplot(x='sex', y='age', hue='sex', data=titanic, palette={'male': 'green', 'female': 'red'}, legend=False)
+
+
+# Count plot with hue and no legend (optional)
+sn.countplot(x='sex', hue='sex', data=titanic, palette={'male': 'green', 'female': 'red'}, legend=False)
+
+# Box plots
+sn.boxplot(x='sex', y='age', hue='sex', data=titanic, palette={'male': 'green', 'female': 'red'})
+
+
+sn.boxplot(x='sex', y='age', hue='survived', data=titanic)
+
+# Violin plots
+sn.violinplot(x='sex', y='age', data=titanic, hue='sex', palette={'male': 'green', 'female': 'red'})
+plt.title("Violin Plot of Age by Sex")
+
+sn.violinplot(x='sex', y='age', data=titanic, hue='survived', palette={0: 'red', 1: 'blue'})
+plt.title("Violin Plot of Age by Sex and Survival")
+
+# Strip and swarm plots
+
+sn.stripplot(x='sex', y='age', data=titanic, jitter=True, hue='sex', palette={'male': 'green', 'female': 'red'})
+plt.title("Strip Plot of Age by Sex")
+
+sn.stripplot(x='sex', y='age', data=titanic, jitter=True, hue='survived')
+plt.title("Strip Plot of Age by Sex and Survival Status")
+
+sn.swarmplot(x='sex', y='age', data=titanic)
+plt.title("Swarm Plot of Age by Sex")
+
+sn.swarmplot(x='sex', y='age', data=titanic, hue='survived')
+plt.title("Swarm Plot of Age by Sex and Survival Status")
+
+
+# Correlation heatmap
+columns_to_include = ['survived', 'pclass', 'age', 'fare', 'sibsp', 'parch', 'adult_male', 'alone']
+corr = titanic[columns_to_include].corr()
+print(corr)
+
+sn.heatmap(corr)
+
+plt.figure(figsize=(10, 6))
+sn.histplot(data=titanic, x='fare', bins=30, kde=True, color='skyblue')
+plt.title('Distribution of Fare')
+plt.xlabel('Fare')
+plt.ylabel('Number of Passengers')
+plt.grid(True)
+
+plt.show()
